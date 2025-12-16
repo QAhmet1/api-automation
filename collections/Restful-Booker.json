@@ -1,0 +1,173 @@
+{
+	"info": {
+		"_postman_id": "b3511040-c80d-45ca-a283-a4126fde38ef",
+		"name": "Restful-Booker",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23559743",
+		"_collection_link": "https://speeding-meteor-115210.postman.co/workspace/d81ce8cc-ea20-43f4-8fd7-299117b347e4/collection/23559743-b3511040-c80d-45ca-a283-a4126fde38ef?action=share&source=collection_link&creator=23559743"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();\r",
+							"pm.test(\"Status code is 200\", ()=> pm.response.to.have.status(200));\r",
+							"pm.test(\"Token is generated\", () =>{\r",
+							"   pm.expect(jsonData.token).to.be.a('string');\r",
+							"    pm.environment.set(\"token\", jsonData.token); // Store token in environment variable\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Booking list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "const firstName = pm.variables.replaceIn('{{$randomFirstName}}');\r\nconst lastName = pm.variables.replaceIn('{{$randomLastName}}');\r\nconst totalPrice = Math.floor(Math.random() * 1000);\r\n\r\npm.environment.set(\"tmp_firstName\", firstName);\r\npm.environment.set(\"tmp_lastName\", lastName);\r\npm.environment.set(\"tmp_totalPrice\", totalPrice);\r\n{\r\n    \"firstname\" : \"{{tmp_firstName}}\",\r\n    \"lastname\" : \"{{tmp_lastName}}\",\r\n    \"totalprice\" : {{tmp_totalPrice}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"2024-01-01\",\r\n        \"checkout\" : \"2024-01-10\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/booking",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Booking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Booking created successfully\", () => {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"if (pm.response.code === 200) {",
+							"    const jsonData = pm.response.json();",
+							"    pm.test(\"Booking data matches request\", () => {",
+							"        pm.expect(jsonData.booking.firstname).to.eql(pm.environment.get(\"tmp_firstName\"));",
+							"    });",
+							"    pm.environment.set(\"bookingId\", jsonData.bookingid);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const firstName = pm.variables.replaceIn('{{$randomFirstName}}');",
+							"const lastName = pm.variables.replaceIn('{{$randomLastName}}');",
+							"const totalPrice = Math.floor(Math.random() * 1000);",
+							"",
+							"pm.environment.set(\"tmp_firstName\", firstName);",
+							"pm.environment.set(\"tmp_lastName\", lastName);",
+							"pm.environment.set(\"tmp_totalPrice\", totalPrice);"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n{\r\n    \"firstname\" : \"{{tmp_firstName}}\",\r\n    \"lastname\" : \"{{tmp_lastName}}\",\r\n    \"totalprice\" : {{tmp_totalPrice}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"2024-01-01\",\r\n        \"checkout\" : \"2024-01-10\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/booking",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

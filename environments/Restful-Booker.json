@@ -1,0 +1,58 @@
+{
+	"id": "245ea7b2-54e9-4796-8c06-b5e86f8591c0",
+	"name": "restful-booker",
+	"values": [
+		{
+			"key": "baseUrl",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "username",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "password",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "bookingId",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "tmp_firstName",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "tmp_lastName",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "tmp_totalPrice",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		}
+	],
+	"color": null,
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2025-12-16T12:53:34.846Z",
+	"_postman_exported_using": "Postman/11.74.1"
+}

@@ -1,0 +1,46 @@
+name: Daily API Regression Suite
+
+on:
+  schedule:
+    - cron: '0 7 * * *' # Her sabah 07:00 UTC
+  workflow_dispatch: # Manuel çalıştırma butonu
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Newman & Reporter
+        run: |
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
+
+      - name: Run API Tests
+        env:
+          # GitHub Variables'dan alıyoruz
+          URL: ${{ vars.API_BASE_URL }}
+          # GitHub Secrets'tan alıyoruz
+          USER: ${{ secrets.POSTMAN_USERNAME }}
+          PASS: ${{ secrets.POSTMAN_PASSWORD }}
+        run: |
+          newman run ./collections/Restful-Booker.json \
+          -e ./environments/Restful-Booker.json \
+          --env-var "baseUrl=$URL" \
+          --env-var "username=$USER" \
+          --env-var "password=$PASS" \
+          --reporters cli,htmlextra \
+          --reporter-htmlextra-export ./results/report.html
+
+      - name: Upload Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-automation-report
+          path: ./results/report.html
