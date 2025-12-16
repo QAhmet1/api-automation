@@ -86,7 +86,12 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "const firstName = pm.variables.replaceIn('{{$randomFirstName}}');\r\nconst lastName = pm.variables.replaceIn('{{$randomLastName}}');\r\nconst totalPrice = Math.floor(Math.random() * 1000);\r\n\r\npm.environment.set(\"tmp_firstName\", firstName);\r\npm.environment.set(\"tmp_lastName\", lastName);\r\npm.environment.set(\"tmp_totalPrice\", totalPrice);\r\n{\r\n    \"firstname\" : \"{{tmp_firstName}}\",\r\n    \"lastname\" : \"{{tmp_lastName}}\",\r\n    \"totalprice\" : {{tmp_totalPrice}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"2024-01-01\",\r\n        \"checkout\" : \"2024-01-10\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}"
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
 				},
 				"url": {
 					"raw": "{{baseUrl}}/booking",
@@ -150,7 +155,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "\r\n{\r\n    \"firstname\" : \"{{tmp_firstName}}\",\r\n    \"lastname\" : \"{{tmp_lastName}}\",\r\n    \"totalprice\" : {{tmp_totalPrice}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"2024-01-01\",\r\n        \"checkout\" : \"2024-01-10\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
+					"raw": "{\r\n    \"firstname\" : \"{{tmp_firstName}}\",\r\n    \"lastname\" : \"{{tmp_lastName}}\",\r\n    \"totalprice\" : {{tmp_totalPrice}},\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"2024-01-01\",\r\n        \"checkout\" : \"2024-01-10\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -164,6 +169,203 @@
 					],
 					"path": [
 						"booking"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/booking/{{bookingId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking",
+						"{{bookingId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Booking by Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify updated firstname\", () => {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    const expectedName = \"Updated-\" + pm.environment.get(\"tmp_firstName\");\r",
+							"    pm.expect(jsonData.firstname).to.eql(expectedName);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Total price is updated correctly\", () => {\r",
+							"    pm.expect(pm.response.json().totalprice).to.eql(111);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "token={{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\" : \"Updated-{{tmp_firstName}}\",\r\n    \"lastname\" : \"Updated-{{tmp_lastName}}\",\r\n    \"totalprice\" : 111,\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"2024-01-01\",\r\n        \"checkout\" : \"2024-01-10\"\r\n    },\r\n    \"additionalneeds\" : \"Late Checkout\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/booking/{{bookingId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking",
+						"{{bookingId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Booking partially",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify updated firstname\", () => {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    const expectedName = \"Partially Updated-\" + pm.environment.get(\"tmp_firstName\");\r",
+							"    pm.expect(jsonData.firstname).to.eql(expectedName);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Total price is updated correctly\", () => {\r",
+							"    pm.expect(pm.response.json().totalprice).to.eql(111);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "token={{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\" : \"Partially Updated-{{tmp_firstName}}\",\r\n    \"totalprice\" : 111,\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"2024-01-01\",\r\n        \"checkout\" : \"2024-01-10\"\r\n    },\r\n    \"additionalneeds\" : \"Late Checkout\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/booking/{{bookingId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking",
+						"{{bookingId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete booking by Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", () => {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "token={{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/booking/{{bookingId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking",
+						"{{bookingId}}"
 					]
 				}
 			},
